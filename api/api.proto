@@ -1,0 +1,21 @@
+syntax = "proto3";
+package pb;
+option go_package = "garantex/internal/pb";
+
+import "google/api/annotations.proto";
+
+service Stock {
+  rpc GetPrice(GetPriceRequest) returns (GetPriceResponse) {
+    option (google.api.http) = {
+      get: "/price"
+    };
+  }
+}
+
+message GetPriceRequest {}
+
+message GetPriceResponse {
+  uint64 ts = 1;
+  double askPrice = 2;
+  double bidPrice = 3;
+}
