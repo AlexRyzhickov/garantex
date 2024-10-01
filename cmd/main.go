@@ -16,6 +16,9 @@ import (
 	"syscall"
 	"time"
 
+	"google.golang.org/grpc/health"
+	"google.golang.org/grpc/health/grpc_health_v1"
+
 	"github.com/jackc/pgx/v5/pgxpool"
 
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
@@ -47,6 +50,11 @@ func main() {
 	h := handler.New(s)
 
 	grpcServer := grpc.NewServer(grpc.UnaryInterceptor(grpc_middleware.ChainUnaryServer()))
+
+	//healthcheck
+	healthServer := health.NewServer()
+	grpc_health_v1.RegisterHealthServer(grpcServer, healthServer)
+	healthServer.SetServingStatus("garantex-proxy", grpc_health_v1.HealthCheckResponse_SERVING)
 	pb.RegisterStockServer(grpcServer, h)
 
 	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", config.GRPCPort))

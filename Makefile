@@ -30,3 +30,7 @@ run-db:
 		-e POSTGRES_USER=postgres \
 		-e POSTGRES_PASSWORD=postgres \
 		postgres:12
+
+.PHONY: health-probe
+health-probe:
+	@grpc-health-probe -addr=:9090 -service garantex-proxy
