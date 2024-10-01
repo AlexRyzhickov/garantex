@@ -1,6 +1,6 @@
 .PHONY: run
 run:
-	@go run cmd/*.go
+	@go run cmd/*.go -pg-user=postgres -pg-pass=postgres -pg-db=backend -pg-host=localhost -pg-port=5432
 
 .PHONY: build
 build:
