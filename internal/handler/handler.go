@@ -25,7 +25,7 @@ func New(s PriceService) *Handler {
 	}
 }
 
-func (h *Handler) GetPrice(ctx context.Context, req *pb.GetPriceRequest) (*pb.GetPriceResponse, error) {
+func (h *Handler) GetPrice(_ context.Context, _ *pb.GetPriceRequest) (*pb.GetPriceResponse, error) {
 	price, err := h.s.GetPrice()
 	if err != nil {
 		log.Println("GetPrice method error", err)
@@ -35,7 +35,7 @@ func (h *Handler) GetPrice(ctx context.Context, req *pb.GetPriceRequest) (*pb.Ge
 	err = h.s.SavePrice(price)
 	if err != nil {
 		log.Println("SavePrice method error", err)
-		return nil, err
+		return nil, status.Error(codes.Internal, "Internal error")
 	}
 
 	return &pb.GetPriceResponse{
