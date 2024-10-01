@@ -8,14 +8,16 @@ import (
 )
 
 type Config struct {
-	Conn     string
-	Port     int
-	GRPCPort int
+	Conn        string
+	Port        int
+	GRPCPort    int
+	MetricsPort int
 }
 
 func (c *Config) Read() {
-	flag.IntVar(&c.Port, "http", 8080, "port for http servers")
-	flag.IntVar(&c.GRPCPort, "grps-port", 9090, "port for http servers")
+	flag.IntVar(&c.Port, "http", 8080, "grpc gateway port")
+	flag.IntVar(&c.GRPCPort, "grps-port", 9090, "grpc port")
+	flag.IntVar(&c.MetricsPort, "metrics-port", 9092, "metrics port")
 	flag.Parse()
 
 	user := os.Getenv("POSTGRES_USER")
@@ -31,5 +33,6 @@ func (c *Config) Print() {
 	log.Println("========== GARANTEX PROXY CONFIG ==========")
 	log.Println("GATEWAY_PORT............", c.Port)
 	log.Println("GRPC_PORT...............", c.GRPCPort)
+	log.Println("METRICS_PORT............", c.MetricsPort)
 	log.Println("==================================")
 }

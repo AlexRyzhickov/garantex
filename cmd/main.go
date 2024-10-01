@@ -16,6 +16,9 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/grpc-ecosystem/go-grpc-middleware/providers/prometheus"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
+
 	"google.golang.org/grpc/health"
 	"google.golang.org/grpc/health/grpc_health_v1"
 
@@ -25,8 +28,6 @@ import (
 	"google.golang.org/grpc"
 
 	_ "go.uber.org/automaxprocs"
-
-	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
 )
 
 func main() {
@@ -49,12 +50,21 @@ func main() {
 	s := service.New(r)
 	h := handler.New(s)
 
-	grpcServer := grpc.NewServer(grpc.UnaryInterceptor(grpc_middleware.ChainUnaryServer()))
+	metrics := prometheus.NewServerMetrics()
+
+	grpcServer := grpc.NewServer(
+		grpc.StreamInterceptor(metrics.StreamServerInterceptor()),
+		grpc.UnaryInterceptor(metrics.UnaryServerInterceptor()),
+	)
 
 	//healthcheck
 	healthServer := health.NewServer()
 	grpc_health_v1.RegisterHealthServer(grpcServer, healthServer)
 	healthServer.SetServingStatus("garantex-proxy", grpc_health_v1.HealthCheckResponse_SERVING)
+	//prometheus metrics
+	metrics.InitializeMetrics(grpcServer)
+	http.Handle("/metrics", promhttp.Handler())
+	//setting handler
 	pb.RegisterStockServer(grpcServer, h)
 
 	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", config.GRPCPort))
@@ -65,14 +75,6 @@ func main() {
 	shutdown := make(chan os.Signal, 1)
 	signal.Notify(shutdown, os.Interrupt, syscall.SIGTERM)
 	defer signal.Stop(shutdown)
-
-	go func() {
-		log.Printf("GRPC server is listening on :%d", config.GRPCPort)
-		err := grpcServer.Serve(lis)
-		if err != nil && err != grpc.ErrServerStopped {
-			log.Fatal("GRPC server error")
-		}
-	}()
 
 	ctx := context.Background()
 	ctx, cancel := context.WithCancel(ctx)
@@ -91,10 +93,25 @@ func main() {
 	}
 
 	go func() {
+		log.Printf("GRPC server is listening on :%d", config.GRPCPort)
+		err := grpcServer.Serve(lis)
+		if err != nil && err != grpc.ErrServerStopped {
+			log.Fatal(err)
+		}
+	}()
+
+	go func() {
 		log.Printf("GRPC gateway server is listening on :%d", config.Port)
 		err := srv.ListenAndServe()
 		if err != nil && err != http.ErrServerClosed {
-			log.Fatal("GRPC gateway server error", err)
+			log.Fatal(err)
+		}
+	}()
+
+	go func() {
+		log.Printf("Metrics server is listening on :%d", config.MetricsPort)
+		if err := http.ListenAndServe(fmt.Sprintf(":%d", config.MetricsPort), nil); err != nil {
+			log.Fatal(err)
 		}
 	}()
 

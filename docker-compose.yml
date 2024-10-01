@@ -5,6 +5,8 @@ services:
     build: .
     ports:
       - 8080:8080
+      - 9090:9090
+      - 9092:9092
     depends_on:
       - db
     environment:
