@@ -19,90 +19,90 @@ import (
 const _ = grpc.SupportPackageIsVersion8
 
 const (
-	Stock_GetPrice_FullMethodName = "/pb.Stock/GetPrice"
+	CryptoExchangeService_GetPrice_FullMethodName = "/pb.CryptoExchangeService/GetPrice"
 )
 
-// StockClient is the client API for Stock service.
+// CryptoExchangeServiceClient is the client API for CryptoExchangeService service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
-type StockClient interface {
+type CryptoExchangeServiceClient interface {
 	GetPrice(ctx context.Context, in *GetPriceRequest, opts ...grpc.CallOption) (*GetPriceResponse, error)
 }
 
-type stockClient struct {
+type cryptoExchangeServiceClient struct {
 	cc grpc.ClientConnInterface
 }
 
-func NewStockClient(cc grpc.ClientConnInterface) StockClient {
-	return &stockClient{cc}
+func NewCryptoExchangeServiceClient(cc grpc.ClientConnInterface) CryptoExchangeServiceClient {
+	return &cryptoExchangeServiceClient{cc}
 }
 
-func (c *stockClient) GetPrice(ctx context.Context, in *GetPriceRequest, opts ...grpc.CallOption) (*GetPriceResponse, error) {
+func (c *cryptoExchangeServiceClient) GetPrice(ctx context.Context, in *GetPriceRequest, opts ...grpc.CallOption) (*GetPriceResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(GetPriceResponse)
-	err := c.cc.Invoke(ctx, Stock_GetPrice_FullMethodName, in, out, cOpts...)
+	err := c.cc.Invoke(ctx, CryptoExchangeService_GetPrice_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-// StockServer is the server API for Stock service.
-// All implementations must embed UnimplementedStockServer
+// CryptoExchangeServiceServer is the server API for CryptoExchangeService service.
+// All implementations must embed UnimplementedCryptoExchangeServiceServer
 // for forward compatibility
-type StockServer interface {
+type CryptoExchangeServiceServer interface {
 	GetPrice(context.Context, *GetPriceRequest) (*GetPriceResponse, error)
-	mustEmbedUnimplementedStockServer()
+	mustEmbedUnimplementedCryptoExchangeServiceServer()
 }
 
-// UnimplementedStockServer must be embedded to have forward compatible implementations.
-type UnimplementedStockServer struct {
+// UnimplementedCryptoExchangeServiceServer must be embedded to have forward compatible implementations.
+type UnimplementedCryptoExchangeServiceServer struct {
 }
 
-func (UnimplementedStockServer) GetPrice(context.Context, *GetPriceRequest) (*GetPriceResponse, error) {
+func (UnimplementedCryptoExchangeServiceServer) GetPrice(context.Context, *GetPriceRequest) (*GetPriceResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetPrice not implemented")
 }
-func (UnimplementedStockServer) mustEmbedUnimplementedStockServer() {}
+func (UnimplementedCryptoExchangeServiceServer) mustEmbedUnimplementedCryptoExchangeServiceServer() {}
 
-// UnsafeStockServer may be embedded to opt out of forward compatibility for this service.
-// Use of this interface is not recommended, as added methods to StockServer will
+// UnsafeCryptoExchangeServiceServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to CryptoExchangeServiceServer will
 // result in compilation errors.
-type UnsafeStockServer interface {
-	mustEmbedUnimplementedStockServer()
+type UnsafeCryptoExchangeServiceServer interface {
+	mustEmbedUnimplementedCryptoExchangeServiceServer()
 }
 
-func RegisterStockServer(s grpc.ServiceRegistrar, srv StockServer) {
-	s.RegisterService(&Stock_ServiceDesc, srv)
+func RegisterCryptoExchangeServiceServer(s grpc.ServiceRegistrar, srv CryptoExchangeServiceServer) {
+	s.RegisterService(&CryptoExchangeService_ServiceDesc, srv)
 }
 
-func _Stock_GetPrice_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _CryptoExchangeService_GetPrice_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(GetPriceRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(StockServer).GetPrice(ctx, in)
+		return srv.(CryptoExchangeServiceServer).GetPrice(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: Stock_GetPrice_FullMethodName,
+		FullMethod: CryptoExchangeService_GetPrice_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(StockServer).GetPrice(ctx, req.(*GetPriceRequest))
+		return srv.(CryptoExchangeServiceServer).GetPrice(ctx, req.(*GetPriceRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-// Stock_ServiceDesc is the grpc.ServiceDesc for Stock service.
+// CryptoExchangeService_ServiceDesc is the grpc.ServiceDesc for CryptoExchangeService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
-var Stock_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "pb.Stock",
-	HandlerType: (*StockServer)(nil),
+var CryptoExchangeService_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "pb.CryptoExchangeService",
+	HandlerType: (*CryptoExchangeServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
 			MethodName: "GetPrice",
-			Handler:    _Stock_GetPrice_Handler,
+			Handler:    _CryptoExchangeService_GetPrice_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

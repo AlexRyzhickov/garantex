@@ -31,7 +31,7 @@ var _ = runtime.String
 var _ = utilities.NewDoubleArray
 var _ = metadata.Join
 
-func request_Stock_GetPrice_0(ctx context.Context, marshaler runtime.Marshaler, client StockClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func request_CryptoExchangeService_GetPrice_0(ctx context.Context, marshaler runtime.Marshaler, client CryptoExchangeServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq GetPriceRequest
 	var metadata runtime.ServerMetadata
 
@@ -40,7 +40,7 @@ func request_Stock_GetPrice_0(ctx context.Context, marshaler runtime.Marshaler, 
 
 }
 
-func local_request_Stock_GetPrice_0(ctx context.Context, marshaler runtime.Marshaler, server StockServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func local_request_CryptoExchangeService_GetPrice_0(ctx context.Context, marshaler runtime.Marshaler, server CryptoExchangeServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq GetPriceRequest
 	var metadata runtime.ServerMetadata
 
@@ -49,25 +49,25 @@ func local_request_Stock_GetPrice_0(ctx context.Context, marshaler runtime.Marsh
 
 }
 
-// RegisterStockHandlerServer registers the http handlers for service Stock to "mux".
-// UnaryRPC     :call StockServer directly.
+// RegisterCryptoExchangeServiceHandlerServer registers the http handlers for service CryptoExchangeService to "mux".
+// UnaryRPC     :call CryptoExchangeServiceServer directly.
 // StreamingRPC :currently unsupported pending https://github.com/grpc/grpc-go/issues/906.
-// Note that using this registration option will cause many gRPC library features to stop working. Consider using RegisterStockHandlerFromEndpoint instead.
-func RegisterStockHandlerServer(ctx context.Context, mux *runtime.ServeMux, server StockServer) error {
+// Note that using this registration option will cause many gRPC library features to stop working. Consider using RegisterCryptoExchangeServiceHandlerFromEndpoint instead.
+func RegisterCryptoExchangeServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux, server CryptoExchangeServiceServer) error {
 
-	mux.Handle("GET", pattern_Stock_GetPrice_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("GET", pattern_CryptoExchangeService_GetPrice_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
-		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/pb.Stock/GetPrice", runtime.WithHTTPPathPattern("/price"))
+		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/pb.CryptoExchangeService/GetPrice", runtime.WithHTTPPathPattern("/price"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_Stock_GetPrice_0(ctx, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_CryptoExchangeService_GetPrice_0(ctx, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
@@ -75,16 +75,16 @@ func RegisterStockHandlerServer(ctx context.Context, mux *runtime.ServeMux, serv
 			return
 		}
 
-		forward_Stock_GetPrice_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_CryptoExchangeService_GetPrice_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
 	return nil
 }
 
-// RegisterStockHandlerFromEndpoint is same as RegisterStockHandler but
+// RegisterCryptoExchangeServiceHandlerFromEndpoint is same as RegisterCryptoExchangeServiceHandler but
 // automatically dials to "endpoint" and closes the connection when "ctx" gets done.
-func RegisterStockHandlerFromEndpoint(ctx context.Context, mux *runtime.ServeMux, endpoint string, opts []grpc.DialOption) (err error) {
+func RegisterCryptoExchangeServiceHandlerFromEndpoint(ctx context.Context, mux *runtime.ServeMux, endpoint string, opts []grpc.DialOption) (err error) {
 	conn, err := grpc.Dial(endpoint, opts...)
 	if err != nil {
 		return err
@@ -104,40 +104,40 @@ func RegisterStockHandlerFromEndpoint(ctx context.Context, mux *runtime.ServeMux
 		}()
 	}()
 
-	return RegisterStockHandler(ctx, mux, conn)
+	return RegisterCryptoExchangeServiceHandler(ctx, mux, conn)
 }
 
-// RegisterStockHandler registers the http handlers for service Stock to "mux".
+// RegisterCryptoExchangeServiceHandler registers the http handlers for service CryptoExchangeService to "mux".
 // The handlers forward requests to the grpc endpoint over "conn".
-func RegisterStockHandler(ctx context.Context, mux *runtime.ServeMux, conn *grpc.ClientConn) error {
-	return RegisterStockHandlerClient(ctx, mux, NewStockClient(conn))
+func RegisterCryptoExchangeServiceHandler(ctx context.Context, mux *runtime.ServeMux, conn *grpc.ClientConn) error {
+	return RegisterCryptoExchangeServiceHandlerClient(ctx, mux, NewCryptoExchangeServiceClient(conn))
 }
 
-// RegisterStockHandlerClient registers the http handlers for service Stock
-// to "mux". The handlers forward requests to the grpc endpoint over the given implementation of "StockClient".
-// Note: the gRPC framework executes interceptors within the gRPC handler. If the passed in "StockClient"
+// RegisterCryptoExchangeServiceHandlerClient registers the http handlers for service CryptoExchangeService
+// to "mux". The handlers forward requests to the grpc endpoint over the given implementation of "CryptoExchangeServiceClient".
+// Note: the gRPC framework executes interceptors within the gRPC handler. If the passed in "CryptoExchangeServiceClient"
 // doesn't go through the normal gRPC flow (creating a gRPC client etc.) then it will be up to the passed in
-// "StockClient" to call the correct interceptors.
-func RegisterStockHandlerClient(ctx context.Context, mux *runtime.ServeMux, client StockClient) error {
+// "CryptoExchangeServiceClient" to call the correct interceptors.
+func RegisterCryptoExchangeServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux, client CryptoExchangeServiceClient) error {
 
-	mux.Handle("GET", pattern_Stock_GetPrice_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("GET", pattern_CryptoExchangeService_GetPrice_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
-		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/pb.Stock/GetPrice", runtime.WithHTTPPathPattern("/price"))
+		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/pb.CryptoExchangeService/GetPrice", runtime.WithHTTPPathPattern("/price"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_Stock_GetPrice_0(ctx, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_CryptoExchangeService_GetPrice_0(ctx, inboundMarshaler, client, req, pathParams)
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
 
-		forward_Stock_GetPrice_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_CryptoExchangeService_GetPrice_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
@@ -145,9 +145,9 @@ func RegisterStockHandlerClient(ctx context.Context, mux *runtime.ServeMux, clie
 }
 
 var (
-	pattern_Stock_GetPrice_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0}, []string{"price"}, ""))
+	pattern_CryptoExchangeService_GetPrice_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0}, []string{"price"}, ""))
 )
 
 var (
-	forward_Stock_GetPrice_0 = runtime.ForwardResponseMessage
+	forward_CryptoExchangeService_GetPrice_0 = runtime.ForwardResponseMessage
 )

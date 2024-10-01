@@ -65,7 +65,7 @@ func main() {
 	metrics.InitializeMetrics(grpcServer)
 	http.Handle("/metrics", promhttp.Handler())
 	//setting handler
-	pb.RegisterStockServer(grpcServer, h)
+	pb.RegisterCryptoExchangeServiceServer(grpcServer, h)
 
 	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", config.GRPCPort))
 	if err != nil {
@@ -82,7 +82,7 @@ func main() {
 
 	mux := runtime.NewServeMux()
 	opts := []grpc.DialOption{grpc.WithInsecure()}
-	err = pb.RegisterStockHandlerFromEndpoint(ctx, mux, fmt.Sprintf(":%d", config.GRPCPort), opts)
+	err = pb.RegisterCryptoExchangeServiceHandlerFromEndpoint(ctx, mux, fmt.Sprintf(":%d", config.GRPCPort), opts)
 	if err != nil {
 		log.Fatal("Registering gRPC gateway endpoint error", err)
 	}

@@ -16,7 +16,7 @@ type PriceService interface {
 
 type Handler struct {
 	s PriceService
-	pb.UnimplementedStockServer
+	pb.UnimplementedCryptoExchangeServiceServer
 }
 
 func New(s PriceService) *Handler {

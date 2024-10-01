@@ -4,7 +4,7 @@ option go_package = "garantex/internal/pb";
 
 import "google/api/annotations.proto";
 
-service Stock {
+service CryptoExchangeService {
   rpc GetPrice(GetPriceRequest) returns (GetPriceResponse) {
     option (google.api.http) = {
       get: "/price"
