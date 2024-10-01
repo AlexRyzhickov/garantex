@@ -12,13 +12,17 @@ type Config struct {
 	Port        int
 	GRPCPort    int
 	MetricsPort int
+	pgUser      string
+	pgPass      string
+	pgDb        string
+	pgHost      string
+	pgPort      string
 }
 
 func (c *Config) Read() {
-	flag.IntVar(&c.Port, "http", 8080, "grpc gateway port")
+	flag.IntVar(&c.Port, "port", 8080, "grpc gateway port")
 	flag.IntVar(&c.GRPCPort, "grps-port", 9090, "grpc port")
 	flag.IntVar(&c.MetricsPort, "metrics-port", 9092, "metrics port")
-	flag.Parse()
 
 	user := os.Getenv("POSTGRES_USER")
 	pass := os.Getenv("POSTGRES_PASSWORD")
@@ -26,7 +30,14 @@ func (c *Config) Read() {
 	host := os.Getenv("POSTGRES_HOST")
 	port := os.Getenv("POSTGRES_PORT")
 
-	c.Conn = fmt.Sprintf("postgres://%s:%s@%s:%s/%s", user, pass, host, port, db)
+	flag.StringVar(&c.pgUser, "pg-user", user, "")
+	flag.StringVar(&c.pgPass, "pg-pass", pass, "")
+	flag.StringVar(&c.pgDb, "pg-db", db, "")
+	flag.StringVar(&c.pgHost, "pg-host", host, "")
+	flag.StringVar(&c.pgPort, "pg-port", port, "")
+	flag.Parse()
+
+	c.Conn = fmt.Sprintf("postgres://%s:%s@%s:%s/%s", c.pgUser, c.pgPass, c.pgHost, c.pgPort, c.pgDb)
 }
 
 func (c *Config) Print() {
