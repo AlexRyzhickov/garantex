@@ -1,0 +1,26 @@
+version: "2.1"
+
+services:
+  app:
+    build: .
+    ports:
+      - 8080:8080
+    depends_on:
+      - db
+    environment:
+      POSTGRES_DATABASE: backend
+      POSTGRES_HOST: db
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_USER: postgres
+
+  db:
+    ports:
+      - 5432:5432
+    image: postgres:12
+    environment:
+      POSTGRES_DB: backend
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - ./migrations:/docker-entrypoint-initdb.d/
