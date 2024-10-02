@@ -2,11 +2,14 @@ package client
 
 import (
 	"encoding/json"
-	"fmt"
 	"garantex/internal/models"
 	"io"
 	"net/http"
 	"time"
+)
+
+const (
+	url = "https://garantex.org/api/v2/depth?market=usdtrub"
 )
 
 type ApiClient struct{}
@@ -15,7 +18,6 @@ func (*ApiClient) DoRequest() (*models.PriceDepth, error) {
 	httpClient := &http.Client{
 		Timeout: time.Second * 10,
 	}
-	url := fmt.Sprintf("https://garantex.org/api/v2/depth?market=%s", "usdtrub")
 	req, err := http.NewRequest(http.MethodGet, url, nil)
 	if err != nil {
 		return nil, err
