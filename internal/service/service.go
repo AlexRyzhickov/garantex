@@ -1,57 +1,34 @@
 package service
 
 import (
-	"encoding/json"
 	"fmt"
+	"garantex/internal/client"
 	"garantex/internal/models"
-	"io"
-	"net/http"
 	"strconv"
-	"time"
 )
 
 type Repository interface {
 	Upsert(price models.Price) error
 }
 
+type Client interface {
+	DoRequest() (*models.PriceDepth, error)
+}
+
 type Service struct {
-	repo Repository
+	repo   Repository
+	client Client
 }
 
 func New(repo Repository) *Service {
 	return &Service{
-		repo: repo,
+		repo:   repo,
+		client: &client.ApiClient{},
 	}
-}
-
-func (s *Service) doRequest() (*models.PriceDepth, error) {
-	httpClient := &http.Client{
-		Timeout: time.Second * 10,
-	}
-	url := fmt.Sprintf("https://garantex.org/api/v2/depth?market=%s", "usdtrub")
-	req, err := http.NewRequest(http.MethodGet, url, nil)
-	if err != nil {
-		return nil, err
-	}
-	res, err := httpClient.Do(req)
-	if err != nil {
-		return nil, err
-	}
-	defer res.Body.Close()
-	b, err := io.ReadAll(res.Body)
-	if err != nil {
-		return nil, err
-	}
-	t := &models.PriceDepth{}
-	err = json.Unmarshal(b, t)
-	if err != nil {
-		return nil, err
-	}
-	return t, nil
 }
 
 func (s *Service) GetPrice() (models.Price, error) {
-	priceDepth, err := s.doRequest()
+	priceDepth, err := s.client.DoRequest()
 	if err != nil {
 		return models.Price{}, err
 	}
@@ -65,7 +42,7 @@ func (s *Service) GetPrice() (models.Price, error) {
 	if err != nil {
 		return models.Price{}, err
 	}
-	bidPrice, err := strconv.ParseFloat(priceDepth.Asks[0].Price, 32)
+	bidPrice, err := strconv.ParseFloat(priceDepth.Bids[0].Price, 32)
 	if err != nil {
 		return models.Price{}, err
 	}

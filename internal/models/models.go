@@ -7,19 +7,11 @@ type PriceDepth struct {
 }
 
 type Ask struct {
-	Price  string `json:"price"`
-	Volume string `json:"volume"`
-	Amount string `json:"amount"`
-	Factor string `json:"factor"`
-	Type   string `json:"type"`
+	Price string `json:"price"`
 }
 
 type Bid struct {
-	Price  string `json:"price"`
-	Volume string `json:"volume"`
-	Amount string `json:"amount"`
-	Factor string `json:"factor"`
-	Type   string `json:"type"`
+	Price string `json:"price"`
 }
 
 type Price struct {

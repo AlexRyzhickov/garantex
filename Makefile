@@ -34,3 +34,7 @@ run-db:
 .PHONY: health-probe
 health-probe:
 	@grpc-health-probe -addr=:9090 -service garantex-proxy
+
+.PHONY: gen-mocks
+gen-mocks:
+	docker run -v `pwd`:/src -w /src vektra/mockery:v2.46.1 --case snake --dir internal --output internal/mock --outpkg mock --all --exported
