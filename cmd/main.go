@@ -30,6 +30,10 @@ import (
 	_ "go.uber.org/automaxprocs"
 )
 
+const (
+	serviceName = "garantex-proxy"
+)
+
 func main() {
 	config := new(internal.Config)
 	config.Read()
@@ -60,7 +64,7 @@ func main() {
 	//healthcheck
 	healthServer := health.NewServer()
 	grpc_health_v1.RegisterHealthServer(grpcServer, healthServer)
-	healthServer.SetServingStatus("garantex-proxy", grpc_health_v1.HealthCheckResponse_SERVING)
+	healthServer.SetServingStatus(serviceName, grpc_health_v1.HealthCheckResponse_SERVING)
 	//prometheus metrics
 	metrics.InitializeMetrics(grpcServer)
 	http.Handle("/metrics", promhttp.Handler())
