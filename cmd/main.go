@@ -18,6 +18,7 @@ import (
 
 	"github.com/grpc-ecosystem/go-grpc-middleware/providers/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
+	"go.uber.org/zap"
 
 	"google.golang.org/grpc/health"
 	"google.golang.org/grpc/health/grpc_health_v1"
@@ -39,6 +40,9 @@ func main() {
 	config.Read()
 	config.Print()
 
+	logger := zap.Must(zap.NewProduction())
+	defer logger.Sync()
+
 	db, err := pgxpool.New(context.Background(), config.Conn)
 	if err != nil {
 		log.Fatal(err)
@@ -52,7 +56,7 @@ func main() {
 
 	r := repository.New(db)
 	s := service.New(r)
-	h := handler.New(s)
+	h := handler.New(s, logger)
 
 	metrics := prometheus.NewServerMetrics()
 
@@ -73,7 +77,7 @@ func main() {
 
 	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", config.GRPCPort))
 	if err != nil {
-		log.Fatal("Listening gRPC error")
+		logger.Fatal("Listening gRPC error", zap.Error(err))
 	}
 
 	shutdown := make(chan os.Signal, 1)
@@ -88,7 +92,7 @@ func main() {
 	opts := []grpc.DialOption{grpc.WithInsecure()}
 	err = pb.RegisterCryptoExchangeServiceHandlerFromEndpoint(ctx, mux, fmt.Sprintf(":%d", config.GRPCPort), opts)
 	if err != nil {
-		log.Fatal("Registering gRPC gateway endpoint error", err)
+		logger.Fatal("Registering gRPC gateway endpoint error", zap.Error(err))
 	}
 
 	srv := http.Server{
@@ -97,7 +101,7 @@ func main() {
 	}
 
 	go func() {
-		log.Printf("GRPC server is listening on :%d", config.GRPCPort)
+		logger.Sugar().Infof("GRPC server is listening on :%d", config.GRPCPort)
 		err := grpcServer.Serve(lis)
 		if err != nil && err != grpc.ErrServerStopped {
 			log.Fatal(err)
@@ -105,7 +109,7 @@ func main() {
 	}()
 
 	go func() {
-		log.Printf("GRPC gateway server is listening on :%d", config.Port)
+		logger.Sugar().Infof("GRPC gateway server is listening on :%d", config.Port)
 		err := srv.ListenAndServe()
 		if err != nil && err != http.ErrServerClosed {
 			log.Fatal(err)
@@ -113,7 +117,7 @@ func main() {
 	}()
 
 	go func() {
-		log.Printf("Metrics server is listening on :%d", config.MetricsPort)
+		logger.Sugar().Infof("Metrics server is listening on :%d", config.MetricsPort)
 		if err := http.ListenAndServe(fmt.Sprintf(":%d", config.MetricsPort), nil); err != nil {
 			log.Fatal(err)
 		}
@@ -121,13 +125,13 @@ func main() {
 
 	<-shutdown
 
-	log.Println("Shutdown signal received")
+	logger.Info("Shutdown signal received")
 	ctx, cancel = context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
 
 	if err := srv.Shutdown(ctx); err != nil {
-		log.Fatal("GRPC gateway server shutdown error")
+		logger.Fatal("GRPC gateway server shutdown error")
 	}
 	grpcServer.GracefulStop()
-	log.Println("Server stopped gracefully")
+	logger.Info("Server stopped gracefully")
 }
