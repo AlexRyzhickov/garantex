@@ -37,4 +37,9 @@ health-probe:
 
 .PHONY: gen-mocks
 gen-mocks:
-	docker run -v `pwd`:/src -w /src vektra/mockery:v2.46.1 --case snake --dir internal --output internal/mock --outpkg mock --all --exported
+	@docker run -v `pwd`:/src -w /src vektra/mockery:v2.46.1 --case snake --dir internal --output internal/mock --outpkg mock --all --exported
+
+.PHONY: load-test
+load-test:
+	@ab -c 4 -n 250 -k http://127.0.0.1:8080/price
+
