@@ -2,6 +2,10 @@
 run:
 	@go run cmd/*.go -pg-user=postgres -pg-pass=postgres -pg-db=backend -pg-host=localhost -pg-port=5432
 
+.PHONY: run-with-envs
+run-with-envs:
+	@export POSTGRES_USER=postgres && export POSTGRES_PASSWORD=postgres && export POSTGRES_DATABASE=backend && export POSTGRES_HOST=localhost && export POSTGRES_PORT=5432 &&  go run cmd/*.go
+
 .PHONY: build
 build:
 	@go build -o ./app cmd/*.go
